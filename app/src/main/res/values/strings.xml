@@ -5,10 +5,12 @@
     <string name="addToDatabase">Add to database</string>
     <string name="title_activity_quiz">QuizActivity</string>
 
+    <string name="pluss">Pluss</string>
+
     <string name="score">Score: </string>
+    <string name="attempts">Attempts: </string>
     <string name="guess_who">Who is this?</string>
     <string name="guess">Guess</string>
-
     <string name="correct">Correct</string>
 
     <string name="select_image">Select image</string>

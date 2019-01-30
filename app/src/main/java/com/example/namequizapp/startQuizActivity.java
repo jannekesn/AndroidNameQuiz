@@ -20,6 +20,7 @@ public class startQuizActivity extends AppCompatActivity {
     private PersonDB db = PersonDB.getInstance();
     private ArrayList<Person> guessed;
     private Integer score = 0;
+    private Integer attempts = 0;
     private Person currentPerson;
     private ImageView imageView;
     private TextView scoreCountView;

@@ -55,7 +55,7 @@ public class CustomAdapter extends ArrayAdapter<Person> {
             });
             if(name != null)
                 name.setText(p.getName());
-            if(iv!=null)
+            if(iv != null)
                 iv.setImageURI(p.getImageUri());
         }
         return convertView;
