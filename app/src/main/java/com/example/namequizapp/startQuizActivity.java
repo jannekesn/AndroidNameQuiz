@@ -24,6 +24,7 @@ public class startQuizActivity extends AppCompatActivity {
     private Person currentPerson;
     private ImageView imageView;
     private TextView scoreCountView;
+    private TextView attemptsView;
     private EditText guessText;
 
     @Override
@@ -38,6 +39,11 @@ public class startQuizActivity extends AppCompatActivity {
         score = 0;
         scoreCountView = findViewById(R.id.textView_score);
         scoreCountView.setText(score.toString());
+
+        attempts = 0;
+        attemptsView = findViewById(R.id.textView_attempts);
+        attemptsView.setText(attempts.toString());
+
         imageView = findViewById(R.id.imageView);
         imageView.setImageURI(currentPerson.getImageUri());
         guessed = new ArrayList<>();
@@ -48,7 +54,9 @@ public class startQuizActivity extends AppCompatActivity {
         guessText = findViewById(R.id.editText_guess);
         String guess = guessText.getText().toString();
 
-        if(guess.toLowerCase().equals(currentPerson.getName().toLowerCase())){
+        attempts++;
+
+        if(guess.toLowerCase().equals(currentPerson.getName().toLowerCase())){ //if guessed correct
             score++;
             Toast.makeText(getApplicationContext(), R.string.correct, Toast.LENGTH_SHORT).show();
         } else {
@@ -82,7 +90,9 @@ public class startQuizActivity extends AppCompatActivity {
             guessed.add(currentPerson);
             imageView.setImageURI(currentPerson.getImageUri());
             scoreCountView.setText(score.toString());
+            attemptsView.setText(attempts.toString());
             guessText.setText("");
+
         }
     }
 }

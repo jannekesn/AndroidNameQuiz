@@ -28,7 +28,8 @@
         android:layout_alignTop="@+id/imageLayout"
         android:layout_toRightOf="@+id/imageLayout"
         android:textAllCaps="false"
-        android:textSize="24sp" />
+        android:layout_centerVertical="true"
+        android:textSize="20sp" />
 
     <ImageButton
         android:id="@+id/delBtn"

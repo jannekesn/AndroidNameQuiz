@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,8 +29,8 @@ public class AddToDatabaseActivity extends AppCompatActivity {
     static final int REQUEST_GALLERY = 2;
 
     private PersonDB db = PersonDB.getInstance();
-    private String imagePath;
-    private Uri uri;
+    private ImageView iv;
+    private Uri file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,41 +46,45 @@ public class AddToDatabaseActivity extends AppCompatActivity {
 
     public void captureImage(View view){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(intent.resolveActivity(getPackageManager()) != null){
-            File imageFile = null;
-            try {
-                imageFile = createImageFile();
-            } catch (IOException ex){
-                ex.printStackTrace();
-            }
 
-            if(imageFile != null){
-                uri = FileProvider.getUriForFile(this, "com.example.namequizapp.fileprovider", imageFile);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                startActivityForResult(intent, REQUEST_CAMERA);
-            }
+        try {
+            file = Uri.fromFile(createImageFile());
+        } catch (Exception ex){
+            //
         }
+
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, file);
+
+        startActivityForResult(intent, REQUEST_CAMERA);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
+        iv = (ImageView) findViewById(R.id.addedImageView);
         if(data != null && resultCode == Activity.RESULT_OK){
             if(requestCode == REQUEST_GALLERY){
-                uri = data.getData();
+                file = data.getData();
+                iv.setImageURI(file);
+            } else if(requestCode == REQUEST_CAMERA) {
+                iv.setImageURI(file);
             }
-            ImageView iv = (ImageView) findViewById(R.id.addedImageView);
-            iv.setImageURI(uri);
         }
     }
 
     public File createImageFile() throws IOException{
-        String timeStamp = new SimpleDateFormat("yyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(imageFileName,".jpg", storageDir);
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "CameraDemo");
 
-        imagePath = image.getAbsolutePath();
-        return image;
+        if (!mediaStorageDir.exists()){
+            if (!mediaStorageDir.mkdirs()){
+                Log.d("CameraDemo", "failed to create directory");
+                return null;
+            }
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        return new File(mediaStorageDir.getPath() + File.separator +
+                "IMG_"+ timeStamp + ".jpg");
     }
 
     public void addPerson(View view){
@@ -88,10 +93,10 @@ public class AddToDatabaseActivity extends AppCompatActivity {
 
         if(name.isEmpty()){
             Toast.makeText(getApplicationContext(), "Name can't be empty!", Toast.LENGTH_SHORT).show();
-        }else if(uri == null){
+        }else if(file == null){
             Toast.makeText(getApplicationContext(), "Please select an image.", Toast.LENGTH_SHORT).show();
         }else{
-            Person p = new Person(uri, name);
+            Person p = new Person(file, name);
             db.addPerson(p);
             Toast.makeText(getApplicationContext(), "Person added.", Toast.LENGTH_SHORT).show();
         }
