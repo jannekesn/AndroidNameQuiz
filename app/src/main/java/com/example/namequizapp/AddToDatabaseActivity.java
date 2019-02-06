@@ -6,6 +6,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,10 +14,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.namequizapp.data.Constants;
 import com.example.namequizapp.data.Person;
 import com.example.namequizapp.data.PersonDB;
+import com.example.namequizapp.data.Uploads;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,12 +41,21 @@ public class AddToDatabaseActivity extends AppCompatActivity {
 
     private PersonDB db = PersonDB.getInstance();
     private ImageView iv;
+    private TextView tv;
     private Uri file;
+
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_to_database);
+
+        tv = (TextView) findViewById(R.id.inputName);
+
+        storageReference = FirebaseStorage.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS);
     }
 
     public void selectImage(View view){
@@ -87,6 +107,37 @@ public class AddToDatabaseActivity extends AppCompatActivity {
                 "IMG_"+ timeStamp + ".jpg");
     }
 
+    private void uploadFile(){
+        //cheks if file is available
+        if (file != null){
+
+            StorageReference sRef = storageReference.child(Constants.STORAGE_PATH_UPLOADS + System.currentTimeMillis() + "." + file);
+
+            sRef.putFile(file)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            Toast.makeText(getApplicationContext(), "File Uploaded", Toast.LENGTH_LONG).show();
+
+
+
+                            Uploads uploads = new Uploads(tv.getText().toString().trim(), taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
+
+                            String uploadId = databaseReference.push().getKey();
+                            databaseReference.child(uploadId).setValue(uploads);
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
+    }
+
     public void addPerson(View view){
         EditText inputName = (EditText) findViewById(R.id.inputName);
         String name = inputName.getText().toString();
@@ -96,8 +147,7 @@ public class AddToDatabaseActivity extends AppCompatActivity {
         }else if(file == null){
             Toast.makeText(getApplicationContext(), "Please select an image.", Toast.LENGTH_SHORT).show();
         }else{
-            Person p = new Person(file, name);
-            db.addPerson(p);
+            uploadFile(File, name);
             Toast.makeText(getApplicationContext(), "Person added.", Toast.LENGTH_SHORT).show();
         }
         finish();

@@ -13,17 +13,21 @@ import android.widget.TextView;
 
 import com.example.namequizapp.R;
 import com.example.namequizapp.data.Person;
+import com.example.namequizapp.data.Uploads;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import com.bumtech.glide.Glide
 
 public class CustomAdapter extends ArrayAdapter<Person> {
     private Context context;
-    private ArrayList<Person> db;
+    private List<Uploads> uploadsList;
 
-    public CustomAdapter(Context context, int id, ArrayList<Person> db) {
-        super(context, id, db);
+    public CustomAdapter(Context context, int id, List<Uploads> uploadsList) {
+        super(context, id, uploadsList);
         this.context = context;
-        this.db = db;
+        this.uploadsList = uploadsList;
 
     }
 
@@ -36,9 +40,9 @@ public class CustomAdapter extends ArrayAdapter<Person> {
 
         }
 
-        Person p = db.get(position);
+        Uploads uploads = uploadsList.get(position);
 
-        if (p != null) {
+        if (uploads != null) {
             TextView name = (TextView) convertView.findViewById(R.id.name);
             ImageView iv = (ImageView) convertView.findViewById(R.id.image);
             ImageButton delBtn = (ImageButton) convertView.findViewById(R.id.delBtn);
@@ -49,14 +53,14 @@ public class CustomAdapter extends ArrayAdapter<Person> {
                 public void onClick(View v) {
                     String pos = v.getTag().toString();
                     int _position = Integer.parseInt(pos);
-                    db.remove(_position);
+                    uploadsList.remove(_position);
                     notifyDataSetChanged();
                 }
             });
             if(name != null)
-                name.setText(p.getName());
+                name.setText(uploads.getName());
             if(iv != null)
-                iv.setImageURI(p.getImageUri());
+                Glide.with(context).load(uploads.getUrl()).into(iv);
         }
         return convertView;
 
