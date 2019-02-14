@@ -8,7 +8,8 @@
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
     android:orientation="vertical"
-    tools:context=".startQuizActivity">
+    tools:context=".startQuizActivity"
+    android:id="@+id/startActivityLayout">
 
     <ImageView
         android:id="@+id/imageView"
