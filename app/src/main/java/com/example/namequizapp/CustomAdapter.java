@@ -1,6 +1,8 @@
 package com.example.namequizapp;
 
 import android.content.Context;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,22 +12,30 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.namequizapp.R;
+import com.example.namequizapp.data.Constants;
 import com.example.namequizapp.data.Person;
 import com.example.namequizapp.data.Uploads;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import com.bumtech.glide.Glide
+
 
 public class CustomAdapter extends ArrayAdapter<Person> {
     private Context context;
-    private List<Uploads> uploadsList;
+    private ArrayList<Uploads> uploadsList;
+    private StorageReference storageReference;
+    private DatabaseReference databaseReference;
 
-    public CustomAdapter(Context context, int id, List<Uploads> uploadsList) {
-        super(context, id, uploadsList);
+    public CustomAdapter(Context context, ArrayList<Uploads> uploadsList) {
+        super(context, uploadsList);
         this.context = context;
         this.uploadsList = uploadsList;
 
@@ -40,12 +50,14 @@ public class CustomAdapter extends ArrayAdapter<Person> {
 
         }
 
-        Uploads uploads = uploadsList.get(position);
+        final Uploads uploads = uploadsList.get(position);
 
         if (uploads != null) {
             TextView name = (TextView) convertView.findViewById(R.id.name);
             ImageView iv = (ImageView) convertView.findViewById(R.id.image);
             ImageButton delBtn = (ImageButton) convertView.findViewById(R.id.delBtn);
+
+            Uri uri = Uri.parse(uploads.getUrl());
 
             delBtn.setTag(position);
 
@@ -53,6 +65,24 @@ public class CustomAdapter extends ArrayAdapter<Person> {
                 public void onClick(View v) {
                     String pos = v.getTag().toString();
                     int _position = Integer.parseInt(pos);
+                    Uploads u = new ;
+                    String url = u.getUrl();
+                    StorageReference delRef = storageReference.child(url);
+                    databaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS);
+                    databaseReference.getRoot().child(u.getName());
+                    databaseReference.removeValue();
+                    delRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(context.getApplicationContext(), "deleted", Toast.LENGTH_SHORT);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context.getApplicationContext(),e.getMessage(), Toast.LENGTH_LONG);
+                        }
+                    });
+
                     uploadsList.remove(_position);
                     notifyDataSetChanged();
                 }
@@ -60,7 +90,8 @@ public class CustomAdapter extends ArrayAdapter<Person> {
             if(name != null)
                 name.setText(uploads.getName());
             if(iv != null)
-                Glide.with(context).load(uploads.getUrl()).into(iv);
+
+                iv.setImageURI(uri);
         }
         return convertView;
 

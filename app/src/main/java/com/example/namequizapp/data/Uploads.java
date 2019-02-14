@@ -10,12 +10,13 @@ public class Uploads {
         public String name;
         public String url;
 
-        // Default constructor required for calls to
-        // DataSnapshot.getValue(User.class)
-        public Uploads() {
-        }
+    // Default constructor required for calls to
+    // DataSnapshot.getValue(User.class)
+    public Uploads() {
 
-        public Uploads(String name, String url) {
+    }
+
+    public Uploads(String name, String url) {
             this.name = name;
             this.url= url;
         }

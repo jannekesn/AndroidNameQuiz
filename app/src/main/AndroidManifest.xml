@@ -19,6 +19,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".SharPref"></activity>
+        <activity android:name=".SharedPrefrecences" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +31,7 @@
         <activity android:name=".DatabaseActivity" />
         <activity android:name=".startQuizActivity" />
         <activity android:name=".AddToDatabaseActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.example.namequizapp.fileprovider"

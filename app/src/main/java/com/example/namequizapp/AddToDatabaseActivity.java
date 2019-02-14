@@ -147,7 +147,7 @@ public class AddToDatabaseActivity extends AppCompatActivity {
         }else if(file == null){
             Toast.makeText(getApplicationContext(), "Please select an image.", Toast.LENGTH_SHORT).show();
         }else{
-            uploadFile(File, name);
+            uploadFile();
             Toast.makeText(getApplicationContext(), "Person added.", Toast.LENGTH_SHORT).show();
         }
         finish();
