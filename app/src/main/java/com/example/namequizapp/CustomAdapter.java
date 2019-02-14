@@ -14,8 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.namequizapp.R;
 import com.example.namequizapp.data.Constants;
+import com.example.namequizapp.data.GlideApp;
 import com.example.namequizapp.data.Person;
 import com.example.namequizapp.data.Uploads;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,14 +30,14 @@ import java.util.ArrayList;
 
 
 
-public class CustomAdapter extends ArrayAdapter<Person> {
+public class CustomAdapter extends ArrayAdapter<Uploads> {
     private Context context;
     private ArrayList<Uploads> uploadsList;
     private StorageReference storageReference;
     private DatabaseReference databaseReference;
 
     public CustomAdapter(Context context, ArrayList<Uploads> uploadsList) {
-        super(context, uploadsList);
+        super(context, 0 , uploadsList);
         this.context = context;
         this.uploadsList = uploadsList;
 
@@ -53,9 +55,9 @@ public class CustomAdapter extends ArrayAdapter<Person> {
         final Uploads uploads = uploadsList.get(position);
 
         if (uploads != null) {
-            TextView name = (TextView) convertView.findViewById(R.id.name);
-            ImageView iv = (ImageView) convertView.findViewById(R.id.image);
-            ImageButton delBtn = (ImageButton) convertView.findViewById(R.id.delBtn);
+            TextView name = convertView.findViewById(R.id.name);
+            final ImageView iv = convertView.findViewById(R.id.image);
+            ImageButton delBtn = convertView.findViewById(R.id.delBtn);
 
             Uri uri = Uri.parse(uploads.getUrl());
 
@@ -65,7 +67,7 @@ public class CustomAdapter extends ArrayAdapter<Person> {
                 public void onClick(View v) {
                     String pos = v.getTag().toString();
                     int _position = Integer.parseInt(pos);
-                    Uploads u = new ;
+                    Uploads u = uploadsList.get(_position);
                     String url = u.getUrl();
                     StorageReference delRef = storageReference.child(url);
                     databaseReference = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS);
@@ -89,9 +91,13 @@ public class CustomAdapter extends ArrayAdapter<Person> {
             });
             if(name != null)
                 name.setText(uploads.getName());
-            if(iv != null)
+            if(iv != null){
+                GlideApp.with(context.getApplicationContext()).load(uploads.getUrl()).into(iv);
+            }
 
-                iv.setImageURI(uri);
+
+
+
         }
         return convertView;
 

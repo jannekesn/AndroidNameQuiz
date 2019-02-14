@@ -27,7 +27,7 @@ public class DatabaseActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabase;
 
-    private List<Uploads> uploads;
+    private ArrayList<Uploads> uploads;
 
     private ArrayAdapter adapter;
 
@@ -38,7 +38,7 @@ public class DatabaseActivity extends AppCompatActivity {
 
         uploads = new ArrayList<>();
 
-        ListView lv = (ListView) findViewById(R.id.list_view);
+        final ListView lv = findViewById(R.id.list_view);
 
         mDatabase = FirebaseDatabase.getInstance().getReference(Constants.DATABASE_PATH_UPLOADS);
 

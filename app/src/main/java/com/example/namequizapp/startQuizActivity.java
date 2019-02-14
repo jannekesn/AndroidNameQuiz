@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.namequizapp.data.Constants;
+import com.example.namequizapp.data.GlideApp;
 import com.example.namequizapp.data.Person;
 import com.example.namequizapp.data.PersonDB;
 import com.example.namequizapp.data.Uploads;
@@ -49,7 +50,7 @@ public class startQuizActivity extends AppCompatActivity {
         startNewGame();
     }
 
-    public Uploads giveRandom;{
+    public Uploads giveRandom(){
         Uploads uploads1;
         int s = 0;
         s = cl.size();
@@ -79,7 +80,7 @@ public class startQuizActivity extends AppCompatActivity {
             }
         });
 
-        currentPerson = giveRandom;
+        currentPerson = giveRandom();
         score = 0;
         scoreCountView = findViewById(R.id.textView_score);
         scoreCountView.setText(score.toString());
@@ -89,8 +90,7 @@ public class startQuizActivity extends AppCompatActivity {
         attemptsView.setText(attempts.toString());
 
         imageView = findViewById(R.id.imageView);
-        Uri uri = Uri.parse(currentPerson.getUrl());
-        imageView.setImageURI(uri);
+        GlideApp.with(getApplicationContext()).load(currentPerson.getUrl()).into(imageView);
         guessed = new ArrayList<>();
         guessed.add(currentPerson);
     }
@@ -108,10 +108,10 @@ public class startQuizActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Wrong, that was " + currentPerson.getName() + "!", Toast.LENGTH_LONG).show();
         }
 
-        if(guessed.size() >= uploads.count()){ //if game is over
+        if(guessed.size() >= cl.size()){ //if game is over
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Game Over")
-                    .setMessage("You got " + score + "/" + uploads.count() + " points.")
+                    .setMessage("You got " + score + "/" + cl.size() + " points.")
                     .setPositiveButton("Try again", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -128,13 +128,12 @@ public class startQuizActivity extends AppCompatActivity {
                     .show();
         } else {
             while(guessed.contains(currentPerson)){
-                currentPerson = giveRandom;
+                currentPerson = giveRandom();
             }
 
             //update
             guessed.add(currentPerson);
-            Uri uri = Uri.parse(currentPerson.getUrl());
-            imageView.setImageURI(uri);
+            GlideApp.with(getApplicationContext()).load(currentPerson.getUrl()).into(imageView);
             scoreCountView.setText(score.toString());
             attemptsView.setText(attempts.toString());
             guessText.setText("");
